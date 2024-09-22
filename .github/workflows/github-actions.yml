@@ -62,9 +62,9 @@ jobs:
 
     steps:
     - name: Declare short SHA
-      shell: bash
+      id: vars
       run: |
-        echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+        echo "sha_short=$(git rev-parse --short ${{ github.sha }})" >> $GITHUB_ENV
         
     - name: Checkout code
       uses: actions/checkout@v4
