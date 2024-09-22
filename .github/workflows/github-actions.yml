@@ -21,15 +21,14 @@ jobs:
       with:
         python-version: 3.9
 
-    - name: Go to app directory
-      run: cd app
-
     - name: Install dependencies
       run: |
+        cd app
         pip install -r requirements.txt
 
     - name: Run Flask application for a short period
       run: |
+        cd app
         python demo_app.py
         PID=$!
         sleep 10
@@ -48,15 +47,14 @@ jobs:
       with:
         python-version: 3.9
 
-    - name: Go to app directory
-      run: cd app
-
     - name: Install dependencies
       run: |
+        cd app
         pip install -r requirements.txt
 
     - name: Run tests
       run: |
+        cd app
         python -m unittest discover -s .
 
   dockerize:
@@ -80,5 +78,6 @@ jobs:
 
     - name: Build and push Docker image
       run: |
+        cd app
         docker build -t ${{ secrets.DOCKER_USERNAME }}/demo-app:${{ env.sha_short }} .
         docker push ${{ secrets.DOCKER_USERNAME }}/demo-app:${{ env.sha_short }}
