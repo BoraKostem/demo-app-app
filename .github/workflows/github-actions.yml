@@ -113,6 +113,7 @@ jobs:
           cd argocd
           export sha_short=$(git rev-parse --short ${GITHUB_SHA})
           cd ..
+          mkdir -p argocd/manifests/apps/demo-app
           rm -rf argocd/manifests/apps/demo-app/*
           mv ./demo-app/templates/* argocd/manifests/apps/demo-app/
           git config --global user.email "fenari.kostem@gmail.com"
