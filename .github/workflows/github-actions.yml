@@ -76,3 +76,45 @@ jobs:
         export sha_short=$(git rev-parse --short HEAD)
         docker build -t ${{ secrets.DOCKER_USERNAME }}/demo-app:$sha_short .
         docker push ${{ secrets.DOCKER_USERNAME }}/demo-app:$sha_short
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Helm
+        uses: azure/setup-helm@v4.2.0
+
+      - name: Clone Helm Repository
+        uses: actions/checkout@v4
+        with:
+          repository: 'BoraKostem/demo-app-Helm'
+          path: ./helm
+          token: ${{ secrets.PAT }}
+
+      - name: Clone ArgoCD Repository    
+        uses: actions/checkout@v4
+        with:
+          repository: 'BoraKostem/demo-app-ArgoCD'
+          path: ./argocd
+          token: ${{ secrets.PAT }}
+          
+      - name: Generate Kubernetes Manifests with Helm
+        env:
+          NAMESPACE: demo-app
+          IMAGE_REPO: borakostem/
+          IMAGE_NAME: demo-app
+        run: |
+          export sha_short=$(git rev-parse --short HEAD)
+          helm template release helm/demo-app --set namespace=${NAMESPACE}, --set image.repository=${IMAGE_REPO}${IMAGE_NAME}, --set image.tag=$sha_short, --set fullnameOverride=${IMAGE_NAME} --output-dir ./
+
+      - name: Update ArgoCD Manifests
+        run: |
+          export sha_short=$(git rev-parse --short HEAD)
+          rm -rf argocd/manifests/apps/demo-app/*
+          mv ./demo-app/templates/* argocd/manifests/apps/demo-app/
+          git config --global user.email "fenari.kostem@gmail.com"
+          git config --global user.name "CI_CD Bot"
+          cd argocd
+          git add .
+          git commit -m "Update demo-app commit ${sha_short}"
+          git remote set-url origin  https://github.com/BoraKostem/demo-app-ArgoCD.git
+          git push origin main
