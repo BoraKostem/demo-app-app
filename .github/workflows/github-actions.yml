@@ -103,12 +103,15 @@ jobs:
           IMAGE_REPO: borakostem/
           IMAGE_NAME: demo-app
         run: |
+          cd helm
           export sha_short=$(git rev-parse --short ${GITHUB_SHA})
-          helm template release helm/demo-app --set namespace=${NAMESPACE}, --set image.repository=${IMAGE_REPO}${IMAGE_NAME}, --set image.tag=$sha_short, --set fullnameOverride=${IMAGE_NAME} --output-dir ./
+          helm template release demo-app --set namespace=${NAMESPACE}, --set image.repository=${IMAGE_REPO}${IMAGE_NAME}, --set image.tag=$sha_short, --set fullnameOverride=${IMAGE_NAME} --output-dir ./
 
       - name: Update ArgoCD Manifests
         run: |
+          cd argocd
           export sha_short=$(git rev-parse --short ${GITHUB_SHA})
+          cd ..
           rm -rf argocd/manifests/apps/demo-app/*
           mv ./demo-app/templates/* argocd/manifests/apps/demo-app/
           git config --global user.email "fenari.kostem@gmail.com"
