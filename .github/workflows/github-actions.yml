@@ -104,12 +104,14 @@ jobs:
           IMAGE_NAME: demo-app
         run: |
           cd helm
+          ls
           export sha_short=$(git rev-parse --short ${GITHUB_SHA})
-          helm template release demo-app --set namespace=${NAMESPACE}, --set image.repository=${IMAGE_REPO}${IMAGE_NAME}, --set image.tag=$sha_short, --set fullnameOverride=${IMAGE_NAME} --output-dir ./
+          helm template release demo-app --set namespace=${NAMESPACE}, --set image.repository=${IMAGE_REPO}${IMAGE_NAME}, --set image.tag=$sha_short --output-dir ./
 
       - name: Update ArgoCD Manifests
         run: |
           cd argocd
+          ls
           export sha_short=$(git rev-parse --short ${GITHUB_SHA})
           cd ..
           rm -rf argocd/manifests/apps/demo-app/*
