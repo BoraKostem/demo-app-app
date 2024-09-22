@@ -28,6 +28,7 @@ jobs:
 
     - name: Run Flask application for a short period
       run: |
+        cd app
         nohup flask run &
         sleep 5
         pkill -f "flask"
