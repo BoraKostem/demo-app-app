@@ -27,8 +27,6 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run Flask application for a short period
-      env:
-        FLASK_APP: demo_app.py
       run: |
         nohup flask run &
         sleep 5
